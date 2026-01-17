@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - ReelFlow</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    * {
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+      min-height: 100vh;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .input-field {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .input-field:focus {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: #667eea;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+  </style>
+</head>
+<body class="flex items-center justify-center p-4">
+
+  <!-- Login Card -->
+  <div class="w-full max-w-md">
+
+    <!-- Logo & Title -->
+    <div class="text-center mb-8">
+      <a href="/" class="inline-flex items-center space-x-2 mb-4">
+        <i class="fas fa-video text-4xl gradient-text"></i>
+        <span class="text-3xl font-bold text-white">ReelFlow</span>
+      </a>
+      <h1 class="text-3xl font-bold text-white mb-2">Welcome Back</h1>
+      <p class="text-gray-400">Login to continue sharing your moments</p>
+    </div>
+
+    <!-- Login Form -->
+    <div class="glass-card rounded-2xl p-8">
+
+      <!-- Error Message -->
+      <div id="error-message" class="hidden bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg mb-6">
+        <div class="flex items-center">
+          <i class="fas fa-exclamation-circle mr-2"></i>
+          <span id="error-text"></span>
+        </div>
+      </div>
+
+      <form id="login-form" class="space-y-6">
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-300 mb-2">
+            Email Address
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <i class="fas fa-envelope text-gray-500"></i>
+            </div>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              class="input-field w-full pl-12 pr-4 py-3 rounded-lg text-white"
+              placeholder="you@example.com"
+            >
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-300 mb-2">
+            Password
+          </label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+              <i class="fas fa-lock text-gray-500"></i>
+            </div>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              required
+              minlength="6"
+              class="input-field w-full pl-12 pr-4 py-3 rounded-lg text-white"
+              placeholder="Enter your password"
+            >
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          id="submit-btn"
+          class="btn-primary w-full py-3 rounded-lg text-white font-semibold text-lg"
+        >
+          <span id="btn-text">
+            <i class="fas fa-sign-in-alt mr-2"></i> Login
+          </span>
+          <span id="btn-loading" class="hidden">
+            <i class="fas fa-spinner fa-spin mr-2"></i> Logging in...
+          </span>
+        </button>
+
+      </form>
+
+      <!-- Divider -->
+      <div class="mt-6 text-center">
+        <p class="text-gray-400">
+          Don't have an account?
+          <a href="/pages/signup.html" class="text-purple-400 hover:text-purple-300 font-semibold ml-1">
+            Sign Up
+          </a>
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Back to Home -->
+    <div class="text-center mt-6">
+      <a href="/" class="text-gray-400 hover:text-white transition">
+        <i class="fas fa-arrow-left mr-2"></i> Back to Home
+      </a>
+    </div>
+
+  </div>
+
+  <script type="module" src="/js/login.js"></script>
+
+</body>
+</html>

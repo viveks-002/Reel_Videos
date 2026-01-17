@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feed - ReelFlow</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    * {
+      font-family: 'Inter', sans-serif;
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #000;
+      overflow-x: hidden;
+    }
+
+    /* Video Container */
+    .video-container {
+      height: 100vh;
+      width: 100vw;
+      scroll-snap-align: start;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Scroll Container */
+    #feed-container {
+      height: 100vh;
+      overflow-y: scroll;
+      scroll-snap-type: y mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Hide scrollbar but keep functionality */
+    #feed-container::-webkit-scrollbar {
+      display: none;
+    }
+
+    #feed-container {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Video element */
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Overlay gradient */
+    .video-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 40%;
+      background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+      pointer-events: none;
+    }
+
+    /* Action buttons */
+    .action-buttons {
+      position: absolute;
+      right: 16px;
+      bottom: 120px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      z-index: 10;
+    }
+
+    .action-btn {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .action-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+
+    .action-btn.liked {
+      background: rgba(239, 68, 68, 0.3);
+      border-color: #ef4444;
+    }
+
+    /* Video info */
+    .video-info {
+      position: absolute;
+      bottom: 80px;
+      left: 20px;
+      right: 100px;
+      z-index: 10;
+    }
+
+    /* Loading spinner */
+    .loading {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: white;
+    }
+
+    /* Top bar */
+    .top-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 20px;
+      z-index: 50;
+    }
+
+    /* Bottom navigation */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(10px);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      z-index: 50;
+    }
+
+    .nav-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: rgba(255, 255, 255, 0.6);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .nav-btn:hover, .nav-btn.active {
+      color: white;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <a href="/" class="flex items-center space-x-2">
+      <i class="fas fa-video text-2xl gradient-text"></i>
+      <span class="text-xl font-bold text-white">ReelFlow</span>
+    </a>
+    <div class="flex items-center space-x-4">
+      <button id="upload-btn" class="text-white hover:text-gray-300 transition">
+        <i class="fas fa-plus-circle text-2xl"></i>
+      </button>
+      <button id="profile-btn" class="text-white hover:text-gray-300 transition">
+        <i class="fas fa-user-circle text-2xl"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Feed Container -->
+  <div id="feed-container">
+    <!-- Videos will be loaded here -->
+    <div id="loading-initial" class="video-container flex items-center justify-center">
+      <div class="text-center">
+        <i class="fas fa-spinner fa-spin text-white text-4xl mb-4"></i>
+        <p class="text-white text-lg">Loading videos...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bottom Navigation -->
+  <div class="bottom-nav">
+    <div class="nav-btn active" data-page="feed">
+      <i class="fas fa-home text-2xl"></i>
+      <span class="text-xs">Home</span>
+    </div>
+    <div class="nav-btn" data-page="discover">
+      <i class="fas fa-compass text-2xl"></i>
+      <span class="text-xs">Discover</span>
+    </div>
+    <div class="nav-btn" data-page="upload">
+      <i class="fas fa-plus-square text-2xl"></i>
+      <span class="text-xs">Upload</span>
+    </div>
+    <div class="nav-btn" data-page="profile">
+      <i class="fas fa-user text-2xl"></i>
+      <span class="text-xs">Profile</span>
+    </div>
+  </div>
+
+  <!-- Video Template (Hidden) -->
+  <template id="video-template">
+    <div class="video-container" data-video-id="">
+      <video
+        class="video-player"
+        playsinline
+        loop
+        muted
+        preload="metadata"
+      ></video>
+
+      <!-- Overlay Gradient -->
+      <div class="video-overlay"></div>
+
+      <!-- Video Info -->
+      <div class="video-info">
+        <div class="flex items-center space-x-2 mb-3">
+          <div class="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold">
+            <span class="username-initial">U</span>
+          </div>
+          <span class="text-white font-semibold text-lg username">Username</span>
+        </div>
+        <p class="text-white caption text-sm mb-2"></p>
+        <div class="flex items-center space-x-4 text-gray-300 text-xs">
+          <span class="views-count">
+            <i class="fas fa-eye mr-1"></i> 0 views
+          </span>
+          <span class="created-date"></span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <div class="action-btn like-btn" title="Like">
+          <i class="fas fa-heart text-white text-2xl"></i>
+        </div>
+        <div class="text-center">
+          <span class="text-white font-semibold text-sm like-count">0</span>
+        </div>
+      </div>
+
+      <!-- Loading Indicator -->
+      <div class="loading hidden">
+        <i class="fas fa-spinner fa-spin text-4xl"></i>
+      </div>
+    </div>
+  </template>
+
+  <script type="module" src="/js/feed.js"></script>
+
+</body>
+</html>

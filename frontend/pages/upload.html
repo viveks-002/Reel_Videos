@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Video - ReelFlow</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+    * {
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+      min-height: 100vh;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .input-field {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .input-field:focus {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: #667eea;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .upload-area {
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
+      cursor: pointer;
+    }
+
+    .upload-area:hover {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.05);
+    }
+
+    .upload-area.dragover {
+      border-color: #667eea;
+      background: rgba(102, 126, 234, 0.1);
+    }
+
+    video {
+      max-height: 500px;
+      border-radius: 12px;
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      transition: width 0.3s ease;
+    }
+  </style>
+</head>
+<body class="p-4">
+
+  <!-- Header -->
+  <div class="max-w-4xl mx-auto mb-8 pt-4">
+    <div class="flex justify-between items-center">
+      <a href="/pages/feed.html" class="text-white hover:text-gray-300 transition">
+        <i class="fas fa-arrow-left mr-2"></i> Back to Feed
+      </a>
+      <div class="flex items-center space-x-2">
+        <i class="fas fa-video text-2xl gradient-text"></i>
+        <span class="text-2xl font-bold text-white">ReelFlow</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Upload Card -->
+  <div class="max-w-4xl mx-auto">
+
+    <!-- Title -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-white mb-2">
+        Upload Your <span class="gradient-text">Video</span>
+      </h1>
+      <p class="text-gray-400">Share your moment with the world</p>
+    </div>
+
+    <div class="glass-card rounded-2xl p-8">
+
+      <!-- Success Message -->
+      <div id="success-message" class="hidden bg-green-500/10 border border-green-500/50 text-green-400 px-4 py-3 rounded-lg mb-6">
+        <div class="flex items-center">
+          <i class="fas fa-check-circle mr-2"></i>
+          <span>Video uploaded successfully!</span>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div id="error-message" class="hidden bg-red-500/10 border border-red-500/50 text-red-400 px-4 py-3 rounded-lg mb-6">
+        <div class="flex items-center">
+          <i class="fas fa-exclamation-circle mr-2"></i>
+          <span id="error-text"></span>
+        </div>
+      </div>
+
+      <!-- Upload Form -->
+      <form id="upload-form" class="space-y-6">
+
+        <!-- Video Upload Area -->
+        <div id="upload-area" class="upload-area rounded-xl p-12 text-center">
+          <input
+            type="file"
+            id="video-input"
+            accept="video/mp4,video/mov,video/avi,video/mkv,video/webm"
+            class="hidden"
+          >
+          <div id="upload-prompt">
+            <i class="fas fa-cloud-upload-alt text-6xl text-gray-500 mb-4"></i>
+            <h3 class="text-xl font-semibold text-white mb-2">
+              Click to upload or drag and drop
+            </h3>
+            <p class="text-gray-400 text-sm">
+              MP4, MOV, AVI, MKV, WEBM (max 50MB, up to 60 seconds)
+            </p>
+          </div>
+        </div>
+
+        <!-- Video Preview -->
+        <div id="preview-container" class="hidden">
+          <div class="relative">
+            <video id="video-preview" controls class="w-full"></video>
+            <button
+              type="button"
+              id="remove-video"
+              class="absolute top-4 right-4 bg-red-500 hover:bg-red-600 text-white w-10 h-10 rounded-full flex items-center justify-center transition"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <div class="mt-4 text-gray-400 text-sm">
+            <i class="fas fa-info-circle mr-2"></i>
+            <span id="video-info"></span>
+          </div>
+        </div>
+
+        <!-- Caption -->
+        <div id="caption-container" class="hidden">
+          <label for="caption" class="block text-sm font-medium text-gray-300 mb-2">
+            Caption (Optional)
+          </label>
+          <textarea
+            id="caption"
+            name="caption"
+            rows="4"
+            maxlength="500"
+            class="input-field w-full px-4 py-3 rounded-lg text-white resize-none"
+            placeholder="Write something about your video..."
+          ></textarea>
+          <div class="text-right text-sm text-gray-500 mt-1">
+            <span id="char-count">0</span>/500
+          </div>
+        </div>
+
+        <!-- Upload Progress -->
+        <div id="upload-progress" class="hidden">
+          <div class="flex justify-between text-sm text-gray-400 mb-2">
+            <span>Uploading...</span>
+            <span id="progress-percent">0%</span>
+          </div>
+          <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill" style="width: 0%"></div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          id="submit-btn"
+          class="btn-primary w-full py-4 rounded-lg text-white font-semibold text-lg hidden"
+        >
+          <span id="btn-text">
+            <i class="fas fa-upload mr-2"></i> Upload Video
+          </span>
+          <span id="btn-loading" class="hidden">
+            <i class="fas fa-spinner fa-spin mr-2"></i> Uploading...
+          </span>
+        </button>
+
+      </form>
+
+    </div>
+
+    <!-- Tips -->
+    <div class="mt-8 glass-card rounded-xl p-6">
+      <h3 class="text-lg font-semibold text-white mb-4">
+        <i class="fas fa-lightbulb text-yellow-400 mr-2"></i> Tips for Great Videos
+      </h3>
+      <ul class="space-y-2 text-gray-300 text-sm">
+        <li><i class="fas fa-check text-green-400 mr-2"></i> Keep it short and engaging (15-60 seconds is ideal)</li>
+        <li><i class="fas fa-check text-green-400 mr-2"></i> Use vertical format (9:16) for best mobile experience</li>
+        <li><i class="fas fa-check text-green-400 mr-2"></i> Ensure good lighting and clear audio</li>
+        <li><i class="fas fa-check text-green-400 mr-2"></i> Add a captivating caption to increase engagement</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <script type="module" src="/js/upload.js"></script>
+
+</body>
+</html>
