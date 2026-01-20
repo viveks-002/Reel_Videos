@@ -14,7 +14,7 @@ export const STORAGE_KEYS = {
 // API endpoints
 export const API_ENDPOINTS = {
   // Auth
-  REGISTER: `${API_BASE_URL}/auth/register`,
+  REGISTER: `${API_BASE_URL}/auth/register`,  
   LOGIN: `${API_BASE_URL}/auth/login`,
   GET_ME: `${API_BASE_URL}/auth/me`,
 
